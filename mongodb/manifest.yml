@@ -1,4 +1,15 @@
 
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: ebs-sc
+provisioner: ebs.csi.aws.com
+parameters:
+  type: gp2  # Specify the EBS volume type
+reclaimPolicy: Retain  # Choose the appropriate policy for your needs
+volumeBindingMode: WaitForFirstConsumer
+
+---
 apiVersion: v1
 kind: Service
 metadata:
