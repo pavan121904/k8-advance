@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      tier: app
+      name: user
+  template:
+    metadata:
+      labels:
+        tier: app
+        name: user
+    spec:
+      containers:
+        - name: user
+          imagePullPolicy: Always
+          image: pavanreddy1219/user:k8
+          env:
+            - name: MONGO_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: user-config
+                  key: MONGO_URL
+            - name: REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: user-config
+                  key: REDIS_HOST
+          resources:
+            requests:
+              memory: "100Mi"
+              cpu: "250m"
+            limits:
+              memory: "200Mi"
+              cpu: "500m"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+spec:
+  selector:
+    tier: app
+    name: user
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080

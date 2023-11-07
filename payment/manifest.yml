@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: payment
+      tier: app
+  template:
+    metadata:
+      labels:
+        name: payment
+        tier: app
+    spec:
+      containers:
+        - name: payment
+          imagePullPolicy: Always
+          image: pavanreddy1219/payment:k8
+          resources:
+            requests:
+              memory: "100Mi"
+              cpu: "250m"
+            limits:
+              memory: "200Mi"
+              cpu: "500m"

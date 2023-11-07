@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shipping
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      tier: app
+      name: shipping
+  template:
+    metadata:
+      labels:
+        tier: app
+        name: shipping
+    spec:
+      containers:
+        - name: shipping
+          imagePullPolicy: Always
+          image: pavanreddy1219/shipping:k8
+          resources:
+            requests:
+              memory: "100Mi"
+              cpu: "250m"
+            limits:
+              memory: "500Mi"
+              cpu: "1000m"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: shipping
+spec:
+  selector:
+    tier: app
+    name: shipping
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
