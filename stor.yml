@@ -23,17 +23,18 @@ spec:
       volumes:
         - name: my-pvc-volume
           persistentVolumeClaim:
-            claimName: my-pvc
+            claimName: my-pvc-new
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: my-pvc
+  name: my-pvc-new  # Give it a new name to avoid conflicts
+  namespace: roboshop
 spec:
   accessModes:
     - ReadWriteOnce
   storageClassName: ebs-sc
   resources:
     requests:
-      storage: 3Gi
+      storage: 3Gi  # Set the desired storage size
 
