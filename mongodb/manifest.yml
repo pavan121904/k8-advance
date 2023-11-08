@@ -8,11 +8,13 @@ metadata:
 spec:
   ports:
   - port: 27017
+    targetPort: 27017
     name: mongodb
-  clusterIP: None #headless service
+  clusterIP: None # headless service
   selector:
     name: mongodb
     tier: db
+
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -20,16 +22,16 @@ metadata:
   name: mongodb
   namespace: roboshop
 spec:
+  serviceName: "mongodb"
+  replicas: 1
   selector:
     matchLabels:
-      name: mongodb # has to match .spec.template.metadata.labels
+      name: mongodb
       tier: db
-  serviceName: "mongodb"
-  replicas: 1 # by default is 1
   template:
     metadata:
       labels:
-        name: mongodb # has to match .spec.template.metadata.labels
+        name: mongodb
         tier: db
     spec:
       containers:
@@ -37,16 +39,20 @@ spec:
         image: pavanreddy1219/mongodb:v1
         ports:
         - containerPort: 27017
-          name: mongodb
         volumeMounts:
         - name: mongodb-volume
           mountPath: /data/db
-  volumeClaimTemplates:
-  - metadata:
-      name: mongodb-volume
-    spec:
-      accessModes: [ "ReadWriteOnce" ]
-      storageClassName: "ebs-sc"
-      resources:
-        requests:
-          storage: 1Gi
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongodb-volume-claim
+  namespace: roboshop
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: "ebs-sc"
+  resources:
+    requests:
+      storage: 1Gi
