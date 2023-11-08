@@ -68,6 +68,7 @@ data:
             }
 
 
+
             proxy_http_version 1.1;
             location /images/ {
             expires 5s;
