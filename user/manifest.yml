@@ -1,52 +1,52 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: user-config
+data:
+  REDIS_HOST: "redis"
+  MONGO_URL: "mongodb://mongodb:27017/catalogue"
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: user-deployment
+  name: user
+  namespace: roboshop
+  labels:
+    name: user
+    tier: app
 spec:
   replicas: 1
   selector:
     matchLabels:
-      tier: app
       name: user
+      tier: app
   template:
     metadata:
       labels:
-        tier: app
         name: user
+        tier: app
     spec:
       containers:
-        - name: user
-          imagePullPolicy: Always
-          image: pavanreddy1219/user:k8
-          env:
-            - name: MONGO_URL
-              valueFrom:
-                configMapKeyRef:
-                  name: user-config
-                  key: MONGO_URL
-            - name: REDIS_HOST
-              valueFrom:
-                configMapKeyRef:
-                  name: user-config
-                  key: REDIS_HOST
-          resources:
-            requests:
-              memory: "100Mi"
-              cpu: "250m"
-            limits:
-              memory: "200Mi"
-              cpu: "500m"
-
+      - name: user
+        imagePullPolicy: Always
+        image: pavanreddy1219/user:v1
+        envFrom:
+        - configMapRef:
+            name: user-config
+        ports:
+        - containerPort: 8080
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: user-service
+  name: user
+  namespace: roboshop
 spec:
   selector:
-    tier: app
     name: user
+    tier: app
   ports:
     - protocol: TCP
-      port: 8080
+      port: 80
       targetPort: 8080
